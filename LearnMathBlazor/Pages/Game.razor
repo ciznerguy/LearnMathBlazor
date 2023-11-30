@@ -3,21 +3,46 @@
 @using System.Threading.Tasks
 
 <!-- Game.razor -->
-<div class="text-center">
+<style>
+    .yellow-frame {
+        border: 4px solid yellow;
+        padding: 40px; 
+    }
+
+    .game-over-message {
+        background-color: green;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+    }
+</style>
+
+
+
+<div class="text-center yellow-frame">
     <h3>Welcome to the Game Page!</h3>
+    <br>
+    <br>
     <p>This is your game content.</p>
 
-    <label>Number of Questions: @questionCount</label>
-
+    <label>Number of Questions: @questionCount   Number Of Correct Answers @correctCount</label>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
     <div class="d-flex justify-content-center">
         <div class="mx-3">
             <input type="text" class="form-control" style="width: 200px;" value="@gameLogic.GetNumber1()" readonly />
         </div>
         <div class="mx-3">
-            <label class="my-1" style="font-size: 30px;">+</label>
+            <label class="my-1" style="font-size: 40px;">+</label>
         </div>
         <div class="mx-3">
             <input type="text" class="form-control" style="width: 200px;" value="@gameLogic.GetNumber2()" readonly />
+        </div>
+        <div class="mx-3">
+            <label class="my-1" style="font-size: 40px;">=</label>
         </div>
         <div class="mx-3">
             <input type="text" class="form-control" style="width: 200px;" @bind="userAnswer" placeholder="Editable Textbox" />
@@ -36,43 +61,58 @@
     </div>
 </div>
 
+
+
 @code {
     private OneGameLogic gameLogic;
     private string userAnswer;
     private string message = "";
     private int questionCount = 1;
+    private int correctCount = 0;
 
     private async Task SubmitClick()
     {
         // Handle the button click event here
-        
 
-        if (int.TryParse(userAnswer, out int userAnswerValue))
+        if (questionCount >= 4)
         {
-            bool isCorrect = gameLogic.CheckCorrectAnswer(userAnswerValue);
+            // Display "Game Over" message
 
-            if (isCorrect)
-            {
-                message = "תשובה נכונה";
-            }
-            else
-            {
-                message = "תשובה לא נכונה";
-            }
+            message = $"Game Over. You Got {correctCount} From {questionCount}";
+            // Additional logic if needed
         }
         else
         {
-            message = "פורמט לא נכון";
-        }
+            if (int.TryParse(userAnswer, out int userAnswerValue))
+            {
+                bool isCorrect = gameLogic.CheckCorrectAnswer(userAnswerValue);
 
-        // Delay for 3 seconds
-        await Task.Delay(3000);
-   
-        // Load a new set of numbers
-        InitializeGame();
-        questionCount++;
-        // Clear the message
-        message = "";
+                if (isCorrect)
+                {
+                    
+                    message = "תשובה נכונה";
+                    correctCount++;
+                }
+                else
+                {
+                    message = "תשובה לא נכונה";
+                }
+            }
+            else
+            {
+                message = "פורמט לא נכון";
+            }
+
+            // Delay for 3 seconds
+            await Task.Delay(3000);
+
+            // Load a new set of numbers
+            InitializeGame();
+            questionCount++;
+
+            // Clear the message
+            message = "";
+        }
 
         // Update the UI
         StateHasChanged();
