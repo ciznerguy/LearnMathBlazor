@@ -1,0 +1,42 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+
+<div>
+    <div style="display: grid">
+        <div style="grid-row: 1; grid-column: 1; font-size: 35px; text-align: center">
+            Your Name
+        </div>
+
+        <input @bind="name" style="grid-row: 11; grid-column: 1; margin: 25px; font-size: 16px" placeholder="Enter Your Name" @onfocus="NameTextBox_GotFocus" @oninput="nameTxtBox_TextChanged" />
+
+        <button style="grid-row: 22; grid-column: 1 / span 2; width: 100px; height: 40px; margin: 24px; font-size: 28px" @onclick="Continue_Click">המשך</button>
+    </div>
+</div>
+
+@code {
+    private string name = "Enter Your Name";
+
+    private void NameTextBox_GotFocus(FocusEventArgs e)
+    {
+        // Handle focus event
+        name = "";
+    }
+
+    private void nameTxtBox_TextChanged(ChangeEventArgs e)
+    {
+        // Handle text changed event
+        name = e.Value.ToString();
+    }
+
+    private void Continue_Click(MouseEventArgs e)
+    {
+        // Handle button click event
+        // You can use 'name' variable to access the entered name
+        Console.WriteLine($"Continuing with name: {name}");
+
+        // Redirect to the "Game" page
+        Navigation.NavigateTo("game");
+    }
+}
+
+}

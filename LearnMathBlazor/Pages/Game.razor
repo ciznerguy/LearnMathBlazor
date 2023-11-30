@@ -1,0 +1,90 @@
+﻿@page "/Game"
+@using BlazorApp2.Utilities
+@using System.Threading.Tasks
+
+<!-- Game.razor -->
+<div class="text-center">
+    <h3>Welcome to the Game Page!</h3>
+    <p>This is your game content.</p>
+
+    <label>Number of Questions: @questionCount</label>
+
+    <div class="d-flex justify-content-center">
+        <div class="mx-3">
+            <input type="text" class="form-control" style="width: 200px;" value="@gameLogic.GetNumber1()" readonly />
+        </div>
+        <div class="mx-3">
+            <label class="my-1" style="font-size: 30px;">+</label>
+        </div>
+        <div class="mx-3">
+            <input type="text" class="form-control" style="width: 200px;" value="@gameLogic.GetNumber2()" readonly />
+        </div>
+        <div class="mx-3">
+            <input type="text" class="form-control" style="width: 200px;" @bind="userAnswer" placeholder="Editable Textbox" />
+        </div>
+    </div>
+
+    <button class="btn btn-primary mt-5" @onclick="SubmitClick">Submit</button>
+
+    <div class="mt-3">
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="alert alert-info" role="alert">
+                @message
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private OneGameLogic gameLogic;
+    private string userAnswer;
+    private string message = "";
+    private int questionCount = 1;
+
+    private async Task SubmitClick()
+    {
+        // Handle the button click event here
+        
+
+        if (int.TryParse(userAnswer, out int userAnswerValue))
+        {
+            bool isCorrect = gameLogic.CheckCorrectAnswer(userAnswerValue);
+
+            if (isCorrect)
+            {
+                message = "תשובה נכונה";
+            }
+            else
+            {
+                message = "תשובה לא נכונה";
+            }
+        }
+        else
+        {
+            message = "פורמט לא נכון";
+        }
+
+        // Delay for 3 seconds
+        await Task.Delay(3000);
+   
+        // Load a new set of numbers
+        InitializeGame();
+        questionCount++;
+        // Clear the message
+        message = "";
+
+        // Update the UI
+        StateHasChanged();
+    }
+
+    private void InitializeGame()
+    {
+        gameLogic = new OneGameLogic(1);
+    }
+
+    protected override void OnInitialized()
+    {
+        InitializeGame();
+    }
+}
